@@ -2,7 +2,8 @@
 package receiver
 
 import (
-	"github.com/kataras/iris"
+	"github.com/ddliu/webhook/context"
+	"net/http"
 )
 
 type ReceiverInterface interface {
@@ -10,10 +11,10 @@ type ReceiverInterface interface {
 	GetId() string
 
 	// Receive from context
-	Receive(iris.Context) error
+	Receive(*context.Context, *http.Request) error
 
 	// Check receiver context
-	Match(iris.Context) bool
+	Match(*context.Context, *http.Request) bool
 }
 
 var receivers = make(map[string]ReceiverInterface)

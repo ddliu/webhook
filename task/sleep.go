@@ -1,6 +1,8 @@
 package task
 
 import (
+	"github.com/ddliu/webhook/context"
+	"github.com/spf13/cast"
 	"time"
 )
 
@@ -11,8 +13,10 @@ func (s *Sleep) GetId() string {
 	return "sleep"
 }
 
-func (s *Sleep) Run(c *TaskContext, i TaskInput) error {
-	ms := i.GetInt("DurationMS")
+func (s *Sleep) Run(c *context.Context, i *context.Context) error {
+	v, _ := i.GetValue("DurationMS")
+	ms := cast.ToInt(v)
+
 	if ms <= 0 {
 		ms = 1000
 	}

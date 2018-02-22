@@ -1,7 +1,8 @@
 package receiver
 
 import (
-	"github.com/kataras/iris"
+	"github.com/ddliu/webhook/context"
+	"net/http"
 )
 
 // Auto receiver can detect and choose receivers automaticly
@@ -12,17 +13,17 @@ func (r *Auto) GetId() string {
 	return "auto"
 }
 
-func (r *Auto) Receive(c iris.Context) error {
-	return r.GetMatchedReceiver(c).Receive(c)
+func (r *Auto) Receive(c *context.Context, req *http.Request) error {
+	return r.GetMatchedReceiver(c, req).Receive(c, req)
 }
 
-func (r *Auto) Match(c iris.Context) bool {
+func (r *Auto) Match(c *context.Context, req *http.Request) bool {
 	return true
 }
 
-func (r *Auto) GetMatchedReceiver(c iris.Context) ReceiverInterface {
+func (r *Auto) GetMatchedReceiver(c *context.Context, req *http.Request) ReceiverInterface {
 	for id, receiver := range receivers {
-		if receiver.Match(c) {
+		if receiver.Match(c, req) {
 			return receiver
 		}
 

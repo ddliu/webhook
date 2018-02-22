@@ -4,10 +4,11 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"github.com/ddliu/webhook/context"
 	"github.com/ddliu/webhook/receiver"
 	"github.com/ddliu/webhook/task"
-	"github.com/kataras/iris"
 	"io/ioutil"
+	"net/http"
 )
 
 type App struct {
@@ -37,7 +38,7 @@ func (a *App) Start() {
 	startServer()
 }
 
-func (a *App) receiveHook(hookConfig *HookConfig, c iris.Context) error {
+func (a *App) receiveHook(hookConfig *HookConfig, c *context.Context, req *http.Request) error {
 	receiverType := hookConfig.Type
 	if receiverType == "" {
 		receiverType = "auto"
@@ -48,16 +49,19 @@ func (a *App) receiveHook(hookConfig *HookConfig, c iris.Context) error {
 		return errors.New("Unknown receiver: " + receiverType)
 	}
 
-	return r.Receive(c)
+	return r.Receive(c, req)
 }
 
-func (a *App) runHook(hookId string, c iris.Context) error {
+func (a *App) runHook(hookId string, req *http.Request) error {
+	ctx := &context.Context{}
+	buildContextFromRequest(ctx, req)
+
 	hookConfig := a.config.getHookConfigById(hookId)
 	if hookConfig == nil {
 		return errors.New("Hook not exist")
 	}
 
-	if err := a.receiveHook(hookConfig, c); err != nil {
+	if err := a.receiveHook(hookConfig, ctx, req); err != nil {
 		return err
 	}
 

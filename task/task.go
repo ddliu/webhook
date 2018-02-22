@@ -2,47 +2,26 @@ package task
 
 import (
 	// "github.com/ddliu/webhook/tpl"
-	"github.com/spf13/cast"
+	"github.com/ddliu/webhook/context"
 )
-
-type TaskContext struct {
-}
-
-type TaskInput struct {
-	v map[string]interface{}
-}
-
-func NewTaskInput(v map[string]interface{}) TaskInput {
-	return TaskInput{
-		v: v,
-	}
-}
-
-func (c *TaskInput) GetString(k string) string {
-	return cast.ToString(c.v[k])
-}
-
-func (c *TaskInput) GetInt(k string) int {
-	return cast.ToInt(c.v[k])
-}
 
 type TaskItem struct {
 	Task  TaskInterface
-	Input TaskInput
+	Input *context.Context
 }
 
 type TaskRunner struct {
-	context *TaskContext
+	context *context.Context
 	tasks   []TaskItem
 }
 
-func NewTaskRunner(ctx *TaskContext) *TaskRunner {
+func NewTaskRunner(ctx *context.Context) *TaskRunner {
 	return &TaskRunner{
 		context: ctx,
 	}
 }
 
-func (t *TaskRunner) Add(task TaskInterface, input TaskInput) {
+func (t *TaskRunner) Add(task TaskInterface, input *context.Context) {
 	t.tasks = append(t.tasks, TaskItem{
 		Task:  task,
 		Input: input,
@@ -61,7 +40,7 @@ func (t *TaskRunner) Run() error {
 
 type TaskInterface interface {
 	GetId() string
-	Run(*TaskContext, TaskInput) error
+	Run(*context.Context, *context.Context) error
 }
 
 var registeredTasks = make(map[string]TaskInterface)

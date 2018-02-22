@@ -30,7 +30,7 @@ func startServer() {
 func receive(ctx iris.Context) {
 	webhookId := ctx.Params().Get("id")
 
-	if err := GetApp().runHook(webhookId, ctx); err != nil {
+	if err := GetApp().runHook(webhookId, ctx.Request()); err != nil {
 		ctx.Writef("Error: " + err.Error())
 		return
 	}
