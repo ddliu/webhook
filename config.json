@@ -1,0 +1,51 @@
+{
+    "Listen": ":8080",
+    "plugins": {
+        "receiver": "",
+        "notifier": ""
+        
+    },
+    "providers": {
+        "smtp": {
+
+        }
+    },
+    "contacts": [
+        {
+            "id": "ddliu",
+            "email": "ddliuhb@gmail.com",
+            "groups": ["all"]
+        }
+    ],
+    "groups": [
+        "all"
+    ],
+    "Hooks": [
+        {
+            "Id": "demo",
+            "Type": "unknown",
+            "Conditions": [],
+            "Tasks": [
+                {
+                    "Type": "command",
+                    "Params": {
+                        "Command": "date"
+                    }
+                },
+                {
+                    "Type": "sleep",
+                    "Params": {
+                        "DurationMS": 1000
+                    }
+                },
+                {
+                    "Type": "notify",
+                    "Params": {
+                        "receiver": "all,ddliu"
+                    }
+                }
+            ],
+            "process": "task1 -> task2 -> task3 and task4 -> task5 or task6"
+        }
+    ]
+}
