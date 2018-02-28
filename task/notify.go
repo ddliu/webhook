@@ -39,14 +39,15 @@ func (t *Notify) Run(appContext *context.Context, requestContext *context.Contex
 		return errors.New("No one to send")
 	}
 
+	var err error
 	for _, n := range notifiers {
-		err := n.Notify(to, input.Title, input.Content)
-		if err != nil {
-			return err
+		e := n.Notify(to, input.Title, input.Content)
+		if e != nil {
+			err = e
 		}
 	}
 
-	return nil
+	return err
 }
 
 func init() {
