@@ -7,7 +7,6 @@ import (
 
 func main() {
 	var configFile = flag.String("config", "config.json", "Config file path")
-
 	flag.Parse()
 
 	app.NewApp(*configFile).Start()

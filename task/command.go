@@ -11,7 +11,7 @@ func (t *Command) GetId() string {
 	return "command"
 }
 
-func (t *Command) Run(c *context.Context, i *context.Context) error {
+func (t *Command) Run(appContext *context.Context, requestContext *context.Context, inputContext *context.Context) error {
 	return nil
 }
 

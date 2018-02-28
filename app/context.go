@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func buildContextFromRequest(c *context.Context, req *http.Request) error {
-	var reqData map[string]interface{}
+func buildContextFromRequest(req *http.Request) (*context.Context, error) {
+	var reqData = make(map[string]interface{})
 	// Method
 	reqData["method"] = req.Method
 
@@ -30,11 +30,11 @@ func buildContextFromRequest(c *context.Context, req *http.Request) error {
 		var payload interface{}
 		body, err := ioutil.ReadAll(req.Body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		err = json.Unmarshal(body, payload)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		reqData["payload"] = payload
@@ -43,7 +43,7 @@ func buildContextFromRequest(c *context.Context, req *http.Request) error {
 		var form map[string]interface{}
 		err := req.ParseForm()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		for name, value := range req.PostForm {
@@ -61,6 +61,7 @@ func buildContextFromRequest(c *context.Context, req *http.Request) error {
 
 	reqData["query"] = query
 
-	c.SetValue("req", reqData)
-	return nil
+	c := &context.Context{}
+	c.SetValue(".", reqData)
+	return c, nil
 }

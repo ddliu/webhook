@@ -1,24 +1,22 @@
 {
     "Listen": ":8080",
-    "plugins": {
-        "receiver": "",
-        "notifier": ""
-        
-    },
-    "providers": {
-        "smtp": {
-
-        }
-    },
-    "contacts": [
+    "Verbose": true,
+    "Contacts": [
         {
-            "id": "ddliu",
-            "email": "ddliuhb@gmail.com",
-            "groups": ["all"]
+            "Id": "ddliu",
+            "Email": "ddliuhb@gmail.com",
+            "DingRobot": "access_token",
+            "Groups": ["all"]
         }
     ],
-    "groups": [
-        "all"
+    "Notifiers": [
+        {
+            "Type": "smtp",
+            "Server": "example.com",
+            "Usename": "test",
+            "Password": "test",
+            "From": "test@example.com"
+        }
     ],
     "Hooks": [
         {
@@ -41,11 +39,25 @@
                 {
                     "Type": "notify",
                     "Params": {
-                        "receiver": "all,ddliu"
+                        "Receiver": "all,ddliu"
                     }
                 }
             ],
             "process": "task1 -> task2 -> task3 and task4 -> task5 or task6"
+        },
+        {
+            "Id": "hello",
+            "Type": "unknown",
+            "Tasks": [
+                {
+                    "Type": "notify",
+                    "Params": {
+                        "Receiver": "ddliu",
+                        "Title": "title",
+                        "Content": "content"
+                    }
+                }
+            ]
         }
     ]
 }

@@ -17,7 +17,7 @@ func (r *Gogs) Receive(c *context.Context, req *http.Request) error {
 }
 
 func (r *Gogs) Match(c *context.Context, req *http.Request) bool {
-	return c.Exist("req.headers.X-Gogs-Delivery")
+	return c.Exist("headers.X-Gogs-Delivery")
 }
 
 func init() {

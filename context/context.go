@@ -1,6 +1,7 @@
 package context
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 )
@@ -54,6 +55,15 @@ func (c *Context) GetContext(path string) (*Context, error) {
 	return &Context{
 		data: v,
 	}, nil
+}
+
+func (c *Context) Unmarshal(i interface{}) error {
+	b, err := json.Marshal(c.data)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(b, i)
 }
 
 func (c *Context) Exist(path string) bool {
