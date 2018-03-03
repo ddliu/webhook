@@ -4,6 +4,7 @@ package app
 type Config struct {
 	Listen    string
 	Verbose   bool
+	Vars      map[string]interface{}
 	Hooks     []HookConfig
 	Contacts  []ContactConfig
 	Notifiers []NotifierConfig
@@ -17,6 +18,7 @@ type HookConfig struct {
 
 type TaskConfig struct {
 	Type   string
+	SaveAs string
 	Params map[string]interface{}
 }
 

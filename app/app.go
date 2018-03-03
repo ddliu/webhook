@@ -47,7 +47,7 @@ func (a *App) init() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	c := &context.Context{}
+	c := context.New(nil)
 
 	// Contact
 	cb := &contact.ContactBook{}
@@ -71,7 +71,9 @@ func (a *App) init() {
 		}
 		cb.AddContact(ct)
 	}
+
 	c.SetValue("contact_book", cb)
+	c.SetValue("vars", a.config.Vars)
 
 	a.appContext = c
 
@@ -103,21 +105,43 @@ func (a *App) receiveHook(hookConfig *HookConfig, c *context.Context, req *http.
 
 	log.Debug("Received " + receiverType)
 
-	return r.Receive(c, req)
+	rc, err := r.Receive(c, req)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"Type":    receiverType,
+			"Request": c.GetValue("request"),
+		}).Error("Receive failed")
+		return err
+	}
+
+	if rc != nil {
+		log.WithFields(log.Fields{
+			"Type":     receiverType,
+			"Receiver": rc.GetValue("."),
+		}).Debug("Received")
+	}
+
+	c.SetValue("receiver", rc)
+
+	return nil
 }
 
 func (a *App) runHook(hookId string, req *http.Request) error {
+	ctx := context.New(nil)
 	requestContext, err := buildContextFromRequest(req)
 	if err != nil {
 		return err
 	}
+
+	ctx.SetValue("request", requestContext)
+	ctx.SetValue("app", a.appContext)
 
 	hookConfig := a.config.getHookConfigById(hookId)
 	if hookConfig == nil {
 		return errors.New("Hook not exist")
 	}
 
-	if err := a.receiveHook(hookConfig, requestContext, req); err != nil {
+	if err := a.receiveHook(hookConfig, ctx, req); err != nil {
 		return err
 	}
 
@@ -126,16 +150,21 @@ func (a *App) runHook(hookId string, req *http.Request) error {
 		"HookType": hookConfig.Type,
 	}).Debug("Received hook")
 
-	taskRunner := task.NewTaskRunner(a.appContext, requestContext)
+	taskRunner := task.NewTaskRunner(ctx)
 	for _, taskConfig := range hookConfig.Tasks {
 		t := task.GetTaskById(taskConfig.Type)
 		if t == nil {
 			return errors.New("Unknown task: " + taskConfig.Type)
 		}
 
-		input := &context.Context{}
+		input := context.New(nil)
 		input.SetValue(".", taskConfig.Params)
-		taskRunner.Add(t, input)
+		var item task.TaskItem
+		item.Input = input
+		item.Task = t
+		item.SaveAs = taskConfig.SaveAs
+
+		taskRunner.Add(item)
 	}
 
 	return taskRunner.Run()

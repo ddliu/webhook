@@ -20,6 +20,12 @@
   revision = "72acac2207479d21dd45898c2a4264246c818148"
 
 [[projects]]
+  name = "github.com/ddliu/go-httpclient"
+  packages = ["."]
+  revision = "72917d81d0423a6235790470d15a4d099e3490f9"
+  version = "v0.5.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/eknkc/amber"
   packages = [".","parser"]
@@ -50,10 +56,10 @@
   revision = "ad9fb86c356f971f30319c40ddbdcf72129a2791"
 
 [[projects]]
+  branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "e7c7f3b33712573affdcc7a107218e7926b9a05b"
-  version = "1.0.6"
+  revision = "25fa392355a1247f99f8975710a2c4f0f55a081f"
 
 [[projects]]
   branch = "master"
@@ -128,6 +134,18 @@
   revision = "542fd4642604d0d0c26112396ce5b1a9d01eee0b"
 
 [[projects]]
+  name = "github.com/modern-go/concurrent"
+  packages = ["."]
+  revision = "938152ca6a933f501bb238954eebd3cbcbf489ff"
+  version = "1.0.2"
+
+[[projects]]
+  name = "github.com/modern-go/reflect2"
+  packages = ["."]
+  revision = "1df9eeb2bb81f327b96228865c5687bc2194af3f"
+  version = "1.0.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/ryanuber/columnize"
   packages = ["."]
@@ -146,6 +164,12 @@
   revision = "86672fcb3f950f35f2e675df2240550f2a50762f"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
+  version = "v1.0.4"
+
+[[projects]]
   name = "github.com/spf13/cast"
   packages = ["."]
   revision = "8965335b8c7107321228e3e3702cab9832751bac"
@@ -154,7 +178,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["acme","acme/autocert"]
+  packages = ["acme","acme/autocert","ssh/terminal"]
   revision = "432090b8f568c018896cd8a0fb0345872bbac6ce"
 
 [[projects]]
@@ -166,7 +190,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = ["unix","windows"]
   revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
 
 [[projects]]
@@ -184,6 +208,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "203646a908b62e8568d41064cea08ee7f3954f5e94bfad57a156cfa009875c8d"
+  inputs-digest = "4e5541d034b8ef7cfa23a1e4d9b3713d5d1894ad81cb2ff3dcbd34341e611044"
   solver-name = "gps-cdcl"
   solver-version = 1

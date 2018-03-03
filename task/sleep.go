@@ -13,8 +13,8 @@ func (s *Sleep) GetId() string {
 	return "sleep"
 }
 
-func (s *Sleep) Run(appContext *context.Context, requestContext *context.Context, inputContext *context.Context) error {
-	v, _ := inputContext.GetValue("DurationMS")
+func (s *Sleep) Run(ctx *context.Context) (*context.Context, error) {
+	v := ctx.GetValue("task.input.DurationMS")
 	ms := cast.ToInt(v)
 
 	if ms <= 0 {
@@ -22,9 +22,9 @@ func (s *Sleep) Run(appContext *context.Context, requestContext *context.Context
 	}
 
 	time.Sleep(time.Millisecond * time.Duration(ms))
-	return nil
+	return nil, nil
 }
 
 func init() {
-	registerTask(&Sleep{})
+	RegisterTask(&Sleep{})
 }

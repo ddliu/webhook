@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/ddliu/webhook/app"
+	_ "github.com/ddliu/webhook/plugin"
 )
 
 func main() {

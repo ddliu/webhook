@@ -11,7 +11,7 @@ type ReceiverInterface interface {
 	GetId() string
 
 	// Receive from context
-	Receive(*context.Context, *http.Request) error
+	Receive(*context.Context, *http.Request) (*context.Context, error)
 
 	// Check receiver context
 	Match(*context.Context, *http.Request) bool

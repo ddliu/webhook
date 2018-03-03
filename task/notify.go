@@ -20,36 +20,41 @@ type NotifyInput struct {
 	Content  string
 }
 
-func (t *Notify) Run(appContext *context.Context, requestContext *context.Context, inputContext *context.Context) error {
+func (t *Notify) Run(ctx *context.Context) (*context.Context, error) {
 	var input NotifyInput
 
+	inputContext := ctx.GetContext("task.input")
+
 	if err := inputContext.Unmarshal(&input); err != nil {
-		return err
+		return nil, err
 	}
 
-	v, _ := appContext.GetValue("contact_book")
+	v := ctx.GetValue("app.contact_book")
 	cb := v.(*contact.ContactBook)
 	to := cb.GetById(input.Receiver)
 	if to == nil {
-		return errors.New("Receiver does not exist: " + input.Receiver)
+		return nil, errors.New("Receiver does not exist: " + input.Receiver)
 	}
 
 	notifiers := notifier.MatchNotifiers(to)
 	if len(notifiers) == 0 {
-		return errors.New("No one to send")
+		return nil, errors.New("No one to send")
 	}
+
+	title := ctx.Tpl(input.Title)
+	content := ctx.Tpl(input.Content)
 
 	var err error
 	for _, n := range notifiers {
-		e := n.Notify(to, input.Title, input.Content)
+		e := n.Notify(to, title, content)
 		if e != nil {
 			err = e
 		}
 	}
 
-	return err
+	return nil, err
 }
 
 func init() {
-	registerTask(&Notify{})
+	RegisterTask(&Notify{})
 }

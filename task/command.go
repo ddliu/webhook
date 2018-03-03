@@ -11,10 +11,10 @@ func (t *Command) GetId() string {
 	return "command"
 }
 
-func (t *Command) Run(appContext *context.Context, requestContext *context.Context, inputContext *context.Context) error {
-	return nil
+func (t *Command) Run(ctx *context.Context) (*context.Context, error) {
+	return nil, nil
 }
 
 func init() {
-	registerTask(&Command{})
+	RegisterTask(&Command{})
 }

@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/ddliu/webhook/context"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
@@ -32,7 +33,7 @@ func buildContextFromRequest(req *http.Request) (*context.Context, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = json.Unmarshal(body, payload)
+		err = json.Unmarshal(body, &payload)
 		if err != nil {
 			return nil, err
 		}
@@ -63,5 +64,6 @@ func buildContextFromRequest(req *http.Request) (*context.Context, error) {
 
 	c := &context.Context{}
 	c.SetValue(".", reqData)
+	log.Debug(c.GetValue("payload.sender.id"))
 	return c, nil
 }

@@ -3,15 +3,24 @@ package context
 import (
 	"encoding/json"
 	"errors"
+	"github.com/spf13/cast"
+	"reflect"
+	"regexp"
 	"strings"
 )
+
+func New(data interface{}) *Context {
+	return &Context{
+		data: data,
+	}
+}
 
 // Context container
 type Context struct {
 	data interface{}
 }
 
-func (c *Context) GetValue(path string) (interface{}, error) {
+func (c *Context) GetValueE(path string) (interface{}, error) {
 	if path == "" || path == "." {
 		return c.data, nil
 	}
@@ -22,18 +31,30 @@ func (c *Context) GetValue(path string) (interface{}, error) {
 		if part == "" {
 			continue
 		}
-		m, ok := c.data.(map[string]interface{})
+
+		m, ok := toMap(v)
 		if !ok {
 			return nil, errors.New("Invalid data type")
 		}
 
-		v, ok = m[part]
+		vv, ok := m[part]
 		if !ok {
 			return nil, errors.New("Path does not exist")
 		}
+
+		v = vv
 	}
 
 	return v, nil
+}
+
+func (c *Context) GetValue(path string) interface{} {
+	v, err := c.GetValueE(path)
+	if err != nil {
+		return nil
+	}
+
+	return v
 }
 
 func (c *Context) SetValue(path string, value interface{}) {
@@ -46,8 +67,8 @@ func (c *Context) SetValue(path string, value interface{}) {
 	c.data = setValueRecursive(c.data, parts, value)
 }
 
-func (c *Context) GetContext(path string) (*Context, error) {
-	v, err := c.GetValue(path)
+func (c *Context) GetContextE(path string) (*Context, error) {
+	v, err := c.GetValueE(path)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +76,12 @@ func (c *Context) GetContext(path string) (*Context, error) {
 	return &Context{
 		data: v,
 	}, nil
+}
+
+func (c *Context) GetContext(path string) *Context {
+	return &Context{
+		data: c.GetValue(path),
+	}
 }
 
 func (c *Context) Unmarshal(i interface{}) error {
@@ -67,18 +94,26 @@ func (c *Context) Unmarshal(i interface{}) error {
 }
 
 func (c *Context) Exist(path string) bool {
-	_, err := c.GetValue(path)
+	_, err := c.GetValueE(path)
 	return err == nil
 }
 
 func setValueRecursive(data interface{}, path []string, value interface{}) map[string]interface{} {
 	current := path[0]
-	dataMap, ok := data.(map[string]interface{})
-	if !ok {
+	dataMap, ok := toMap(data)
+	if !ok || dataMap == nil {
 		dataMap = make(map[string]interface{})
 	}
 	if len(path) == 1 {
-		dataMap[current] = value
+		if valueAsContext, ok := value.(*Context); ok {
+			if valueAsContext == nil {
+				dataMap[current] = nil
+			} else {
+				dataMap[current] = valueAsContext.GetValue(".")
+			}
+		} else {
+			dataMap[current] = value
+		}
 	} else {
 		nextData, ok := dataMap[current]
 		var nextDataMap map[string]interface{}
@@ -95,4 +130,29 @@ func setValueRecursive(data interface{}, path []string, value interface{}) map[s
 	}
 
 	return dataMap
+}
+
+func (c *Context) Tpl(tpl string) string {
+	re := regexp.MustCompile(`\$\{[a-zA-Z0-9\._]+\}`)
+	return re.ReplaceAllStringFunc(tpl, c.rep)
+}
+
+func (c *Context) rep(str string) string {
+	str = str[2 : len(str)-1]
+	return cast.ToString(c.GetValue(str))
+}
+
+func toMap(data interface{}) (map[string]interface{}, bool) {
+	ref := reflect.ValueOf(data)
+	if ref.Kind() != reflect.Map {
+		return nil, false
+	}
+
+	result := make(map[string]interface{})
+
+	for _, k := range ref.MapKeys() {
+		result[k.String()] = ref.MapIndex(k).Interface()
+	}
+
+	return result, true
 }
