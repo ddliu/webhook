@@ -156,12 +156,12 @@ func (a *App) RunHook(hookId string, req *http.Request) error {
 		if err := a.receiveHook(hookConfig, ctx, req); err != nil {
 			return err
 		}
-
-		log.WithFields(log.Fields{
-			"HookId":   hookId,
-			"HookType": hookConfig.Type,
-		}).Debug("Received hook")
 	}
+
+	log.WithFields(log.Fields{
+		"HookId":   hookId,
+		"HookType": hookConfig.Type,
+	}).Debug("Run hook")
 
 	taskRunner := task.NewTaskRunner(ctx)
 	for _, taskConfig := range hookConfig.Tasks {
