@@ -11,9 +11,10 @@ type Config struct {
 }
 
 type HookConfig struct {
-	Id    string
-	Type  string
-	Tasks []TaskConfig
+	Id         string
+	Type       string
+	Conditions map[string]interface{}
+	Tasks      []TaskConfig
 }
 
 type TaskConfig struct {

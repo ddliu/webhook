@@ -123,6 +123,12 @@ func (a *App) receiveHook(hookConfig *HookConfig, c *context.Context, req *http.
 
 	c.SetValue("receiver", rc)
 
+	for k, v := range hookConfig.Conditions {
+		if c.GetValue(k) != v {
+			return errors.New("Condition not matched")
+		}
+	}
+
 	return nil
 }
 
