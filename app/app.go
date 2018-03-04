@@ -86,10 +86,15 @@ func (a *App) init() {
 			n.Config(cc)
 		}
 	}
+
 }
 
 func (a *App) Start() {
-	startServer()
+	go func() {
+		a.startSchedule()
+	}()
+
+	a.startServer()
 }
 
 func (a *App) receiveHook(hookConfig *HookConfig, c *context.Context, req *http.Request) error {
@@ -132,14 +137,8 @@ func (a *App) receiveHook(hookConfig *HookConfig, c *context.Context, req *http.
 	return nil
 }
 
-func (a *App) runHook(hookId string, req *http.Request) error {
+func (a *App) RunHook(hookId string, req *http.Request) error {
 	ctx := context.New(nil)
-	requestContext, err := buildContextFromRequest(req)
-	if err != nil {
-		return err
-	}
-
-	ctx.SetValue("request", requestContext)
 	ctx.SetValue("app", a.appContext)
 
 	hookConfig := a.config.getHookConfigById(hookId)
@@ -147,14 +146,22 @@ func (a *App) runHook(hookId string, req *http.Request) error {
 		return errors.New("Hook not exist")
 	}
 
-	if err := a.receiveHook(hookConfig, ctx, req); err != nil {
-		return err
-	}
+	if req != nil {
+		requestContext, err := buildContextFromRequest(req)
+		if err != nil {
+			return err
+		}
 
-	log.WithFields(log.Fields{
-		"HookId":   hookId,
-		"HookType": hookConfig.Type,
-	}).Debug("Received hook")
+		ctx.SetValue("request", requestContext)
+		if err := a.receiveHook(hookConfig, ctx, req); err != nil {
+			return err
+		}
+
+		log.WithFields(log.Fields{
+			"HookId":   hookId,
+			"HookType": hookConfig.Type,
+		}).Debug("Received hook")
+	}
 
 	taskRunner := task.NewTaskRunner(ctx)
 	for _, taskConfig := range hookConfig.Tasks {

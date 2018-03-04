@@ -15,6 +15,7 @@ type HookConfig struct {
 	Type       string
 	Conditions map[string]interface{}
 	Tasks      []TaskConfig
+	Schedule   string
 }
 
 type TaskConfig struct {

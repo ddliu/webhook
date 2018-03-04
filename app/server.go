@@ -5,7 +5,7 @@ import (
 )
 
 // Start web server
-func startServer() {
+func (a *App) startServer() {
 	app := iris.New()
 	iris.WithoutVersionChecker(app)
 
@@ -30,7 +30,7 @@ func startServer() {
 func receive(ctx iris.Context) {
 	webhookId := ctx.Params().Get("id")
 
-	if err := GetApp().runHook(webhookId, ctx.Request()); err != nil {
+	if err := GetApp().RunHook(webhookId, ctx.Request()); err != nil {
 		ctx.Writef("Error: " + err.Error())
 		return
 	}
