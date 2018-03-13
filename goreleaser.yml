@@ -43,5 +43,5 @@ archive:
     - README.md
     # - LICENSE.md
     - config.example.json
-# release:
-#   draft: true
+release:
+  draft: true
