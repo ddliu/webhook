@@ -7,10 +7,6 @@ build:
     - darwin
     - linux
     - windows
-    - freebsd
-    - netbsd
-    - openbsd
-    - dragonfly
   goarch:
     - amd64
     - 386
@@ -39,9 +35,9 @@ archive:
     netbsd: NetBSD
     freebsd: FreeBSD
     dragonfly: DragonFlyBSD
-  files:
-    - README.md
-    # - LICENSE.md
-    - config.example.json
+  # files:
+  #   - README.md
+  #   # - LICENSE.md
+  #   - config.example.json
 release:
   draft: true
