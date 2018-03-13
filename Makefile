@@ -1,3 +1,4 @@
+COMMIT = $(shell git describe --always)
 run:
 	go run webhook.go
 test:
@@ -5,4 +6,4 @@ test:
 vendor:
 	dep ensure -v
 release:
-	echo "release"
+	goreleaser
