@@ -6,4 +6,4 @@ test:
 vendor:
 	dep ensure -v
 release:
-	goreleaser
+	goreleaser --rm-dist

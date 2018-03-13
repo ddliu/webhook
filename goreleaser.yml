@@ -1,5 +1,5 @@
 build:
-  main: main.go
+  main: webhook.go
   binary: webhook
   env:
     - CGO_ENABLED=0
